@@ -26,6 +26,14 @@
  * b. valid coordinates to check
  */
 
+let game = undefined;
+
+let startButton = document.getElementById("startGame");
+startButton.addEventListener("click", startGame);
+
+let alertContainer = document.getElementById("alertContainer");
+let board = document.getElementById('board');
+
 class Game {
   constructor(width = 7, height = 6) {
     this.width = width;
@@ -34,6 +42,7 @@ class Game {
     this.htmlBoard = this._createHtmlBoard();
     this.currPlayer = 1;
     this.placedPieces = [];
+    this.gameEnded = false;
   }
 
   /**
@@ -42,6 +51,7 @@ class Game {
    * If room does NOT exist (column is full), simply returns null
    */
   dropPiece(col) {
+    if (this.gameEnded) { return; }
     // find the next available space (row) for the piece in the target column
     var targetRow = this._findEmptyCellInColumn(col);
     console.log("target row found:", targetRow);
@@ -253,8 +263,10 @@ class Game {
 
   /** End the game and announce results */
   _endGame(msg) {
-    alert(msg);
-  }
+    this.gameEnded = true;
+    alertContainer.innerText = msg;
+    alertContainer.style.display = '';
+ }
 
   /** Checks for whether the game has ended and notifies the user if so */
   _checkForGameEnd() {
@@ -285,6 +297,15 @@ class Game {
 
 }
 
+/** Starts a new game (and restarts any existing games) */
+function startGame(evt) {
+  board.innerHTML = "";
+  alertContainer.style.display = 'none';
+  game = new Game();
+  startButton.innerText = "Restart Game";
+}
+
+
 /** Handle click associated with dropping a game piece */
 function handlePieceDrop(evt) {
   // get the target element's ID
@@ -302,5 +323,3 @@ function handlePieceDrop(evt) {
 
   game.dropPiece(targetColumn);
 }
-
-let game = new Game();
