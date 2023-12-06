@@ -1,7 +1,11 @@
 /* game board table styling */
 
-#mainContainer {
-  width: 350px;
+.customContainer {
+  max-width: 500px;
+}
+
+.halfForm {
+  width: 250px;
 }
 
 #board td {

@@ -34,13 +34,23 @@ startButton.addEventListener("click", startGame);
 let alertContainer = document.getElementById("alertContainer");
 let board = document.getElementById('board');
 
+class Player {
+  constructor(name, color) {
+    this.name = name;
+    this.color = color;
+    this.id = generateMD5HashHex(name);
+  }
+}
+
 class Game {
-  constructor(width = 7, height = 6) {
+  constructor(playerOne, playerTwo, width = 7, height = 6) {
     this.width = width;
     this.height = height;
     this.state = this._createGameState();
     this.htmlBoard = this._createHtmlBoard();
-    this.currPlayer = 1;
+    this.players = [playerOne, playerTwo];
+    this.currPlayerIndex = 0;
+    this.currPlayer = this.players[this.currPlayerIndex];
     this.placedPieces = [];
     this.gameEnded = false;
   }
@@ -76,7 +86,7 @@ class Game {
     const gameState = [];
 
     _initializeMatrix.call(this);
-    _populateGamePieces.call(this);
+    _populateBoardSpaces.call(this);
 
     return gameState;
 
@@ -94,8 +104,8 @@ class Game {
     }
 
     /** Adds board spaces to the state matrix */
-    function _populateGamePieces() {
-      console.log("_populateGamePieces() called.")
+    function _populateBoardSpaces() {
+      console.log("_populateBoardSpaces() called.")
       for (let y = 0; y < this.height; y++) {
         for (let x = 0; x < this.width; x++) {
           console.log("attempting to set game state for xy:", y, x);
@@ -106,7 +116,7 @@ class Game {
         }
       }
 
-      console.log("Game pieces populated:", gameState);
+      console.log("Board spaces populated:", gameState);
 
       /** Accepts board coordinates and return array of valid coord sets */
       function _populateValidCoordSets(y, x) {
@@ -241,7 +251,7 @@ class Game {
 
   /** Adds the players numbers to the JS board state where they dropped a piece */
   _addToBoard(y, x) {
-    this.state[y][x].value = this.currPlayer;
+    this.state[y][x].value = this.currPlayer.id;
     this.placedPieces.push([y, x]);
     console.log("added to board");
   }
@@ -254,7 +264,7 @@ class Game {
     // create the game piece and add classes to support styling
     const gamePiece = document.createElement("div");
     gamePiece.classList.add("gamePiece");
-    gamePiece.classList.add(`player${this.currPlayer}`);
+    gamePiece.style.backgroundColor = this.currPlayer.color;
 
     // select the game cell where the piece will be placed and place it
     const gameCell = document.getElementById(`game-cell-${y}-${x}`);
@@ -285,14 +295,28 @@ class Game {
       // check each valid coord set for this piece
       for (let j = 0; j < this.state[px][py].validCoordSets.length; j++) {
         const validCoordSets = this.state[px][py].validCoordSets[j];
-        if(validCoordSets.every(c => this.state[c[0]][c[1]].value === this.currPlayer)) {
-          return this._endGame(`Player ${this.currPlayer} has won!`);
+        if(validCoordSets.every(c => this.state[c[0]][c[1]].value === this.currPlayer.id)) {
+          return this._endGame(`Player ${this.currPlayer.name} has won!`);
         }
       }
     }
 
     // switch players
-    this.currPlayer = this.currPlayer === 1 ? 2 : 1;
+    this._switchPlayers();
+  }
+
+  /** Switches to the next player */
+  _switchPlayers() {
+    console.log("switching players")
+    if (this.currPlayerIndex >= this.players.length - 1) {
+      this.currPlayerIndex = 0;
+      this.currPlayer = this.players[0]
+      console.log("current player now:", this.currPlayer);
+      return;
+    }
+    this.currPlayerIndex++;
+    this.currPlayer = this.players[this.currPlayerIndex];
+    console.log("current player now:", this.currPlayer);
   }
 
 }
@@ -301,7 +325,22 @@ class Game {
 function startGame(evt) {
   board.innerHTML = "";
   alertContainer.style.display = 'none';
-  game = new Game();
+
+  let playerOneName = document.getElementById("playerOneName").value;
+  let playerOneColor = document.getElementById("playerOneColor").value;
+  let playerTwoName = document.getElementById("playerTwoName").value;
+  let playerTwoColor = document.getElementById("playerTwoColor").value;
+
+  if (playerOneName === playerTwoName) {
+    alertContainer.innerText = "Player names must be unique!";
+    alertContainer.style.display = '';
+    return;
+  }
+
+  let playerOne = new Player(playerOneName, playerOneColor);
+  let playerTwo = new Player(playerTwoName, playerTwoColor);
+
+  game = new Game(playerOne, playerTwo);
   startButton.innerText = "Restart Game";
 }
 
