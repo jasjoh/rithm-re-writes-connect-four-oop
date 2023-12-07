@@ -139,6 +139,15 @@ function removePlayerFromHtmlList(playerId) {
   playerDiv.remove();
 }
 
+function highlightPieces(cells) {
+  for (let cell of cells) {
+    const y = cell[0];
+    const x = cell[1];
+    const gameCell = document.getElementById(`game-cell-${y}-${x}`);
+    gameCell.style.backgroundColor = '#c5c5c5';
+  }
+}
+
 let game = new Game();
 
 /**
