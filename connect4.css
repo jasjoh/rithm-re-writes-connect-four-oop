@@ -1,11 +1,22 @@
 /* game board table styling */
 
+/*
 .customContainer {
   max-width: 500px;
 }
 
 .halfForm {
   width: 250px;
+}
+*/
+
+#playerManagerCol {
+  border-width: 1px;
+  border-style: solid;
+  border-color: #666;
+  border-radius: 5px;
+  background-color: bisque;
+  margin: 12px;
 }
 
 #board td {

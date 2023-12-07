@@ -9,32 +9,109 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
 </head>
 <body>
-  <div class="container-fluid">
+  <div class="container-fluid" id="mainContainer">
+    <div class="row" id="alertRow">
+      <div class="col" id="alertCol">
+        <div id="alertContainer" class="alert alert-info" role="alert" style="display:none">Game Over!</div>
+      </div>
+    </div>
+    <div class="row" id="playerManagerRow">
+
+      <div class="col" id="playerManagerCol">
+
+        <div class="row" id="playerTitleRow">
+          <div class="col" id="playerTitleCol">
+            <span class="fw-bold">Current Players&nbsp</span>
+            <span class="fw-light">(Minimum Two Players)</span>
+          </div>
+        </div>
+
+        <div class="row mb-4" id="playerListRow">
+          <div class="col" id="playerListCol">
+          </div>
+        </div>
+
+        <div class="row" id="addPlayerTitleRow">
+          <div class="col" id="addPlayerTitleCol">
+            <span class="fw-bold">Add New Players</span>
+          </div>
+        </div>
+
+        <div class="row" id="newPlayerFormRow">
+          <div class="col" id="newPlayerFormCol">
+            <form id="newPlayerForm">
+              <div class="mb-3">
+                <label for="playerName" class="form-label">Player Name</label>
+                <input type="text" class="form-control" id="playerName">
+              </div>
+              <div class="mb-3">
+                <label for="playerColor" class="form-label">Player Color</label>
+                <input type="color" class="form-control form-control-color" id="playerColor" value="#ff0000">
+              </div>
+              <div class="mb-3 form-check">
+                <input class="form-check-input" type="checkbox" id="aiPlayerCheck">
+                <label class="form-check-label" for="aiPlayerCheck">Make AI Player</label>
+              </div>
+              <div class="mb-2">
+                <button id="addPlayer" type="button" class="btn btn-outline-secondary mb-2 mt-2">Add Player</button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="row" id="gameAreaRow">
+        <div class="col" id="gameAreaCol">
+
+          <div class="row" id="startGameRow">
+            <div class="col" id="startGameCol">
+              <button id="startGame" type="button" class="btn btn-outline-primary mb-2 mt-2">Start Game</button>
+            </div>
+          </div>
+
+          <div class="row" id="gameBoardRow">
+            <div class="col" id="gameBoardCol">
+              <table id="board"></table>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+    <!--
     <div class="row">
       <div class="col">
-        <div class="customContainer mt-3">
-
-          <div id="alertContainer" class="alert alert-info" role=alert" style="display:none">Game Over!</div>
-          <div id="start">
-            <button id="startGame" type="button" class="btn btn-outline-primary mb-2">Start Game</button>
-          </div>
-          <div id="playerForm">
-            <form class="row mb-3">
-                <label for="playerOneNameAndColor" class="form-label">Player One Name And Color</label>
-                <div class="col">
-                  <input type="text" class="form-control" id="playerOneName" aria-describedby="playerOneName">
-                </div>
-                <div class="col">
-                  <input type="color" class="form-control form-control-color" id="playerOneColor" value="#ff0000" aria-describedby="playerOneColor">
-                </div>
-                <label for="playerOneNameAndColor" class="form-label">Player Two Name And Color</label>
-                <div class="col">
-                  <input type="text" class="form-control" id="playerTwoName" aria-describedby="playerTwoName">
-                </div>
-                <div class="col">
-                  <input type="color" class="form-control form-control-color" id="playerTwoColor" value ="#0062ff" aria-describedby="playerTwoColor">
-                </div>
+        <div class="customContainer">
+          <div id="playerFormContainer">
+            <div class="row mb-3">
+              <div class="col-auto">
+                <div id="playersTitle" class="fw-bold">Players</div>
+                <div id="playersSubTitle" class="fw-light">Minimum Two Players</div>
+              </div>
+              <div class="col-auto">
+                <button id="addPlayer" type="button" class="btn btn-outline-primary">Add Player</button>
+              </div>
+              <div class="col-auto"></div>
+            </div>
+            <form id="playerForm" class="mb-3">
+              <div class="mb-2">
+                <label for="playerName" class="form-label">Player Name</label>
+                <input type="text" class="form-control" id="playerName">
+              </div>
+              <div class="mb-2">
+                <label for="playerColor" class="form-label">Player Color</label>
+                <input type="color" class="form-control form-control-color" id="playerColor" value="#ff0000">
+              </div>
+              <div class="mb-2 form-check">
+                <input class="form-check-input" type="checkbox" value="" id="aiPlayerCheck">
+                <label class="form-check-label" for="aiPlayerCheck">Make AI Player</label>
+              </div>
             </form>
+          </div>
+          <div id="start">
+            <button id="startGame" type="button" class="btn btn-outline-primary mb-2 mt-2">Start Game</button>
           </div>
           <div id="game">
               <table id="board"></table>
@@ -42,8 +119,9 @@
         </div>
       </div>
     </div>
+    -->
   </div>
-  <script src="hash.js"></script>
+  <script src="utils.js"></script>
   <script src="connect4.js"></script>
 </body>
 </html>

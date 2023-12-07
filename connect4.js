@@ -26,33 +26,67 @@
  * b. valid coordinates to check
  */
 
-let game = undefined;
-
 let startButton = document.getElementById("startGame");
 startButton.addEventListener("click", startGame);
+
+let addPlayerButton = document.getElementById("addPlayer");
+addPlayerButton.addEventListener("click", handleAddPlayer);
+
+let playerList = document.getElementById("playerListCol");
 
 let alertContainer = document.getElementById("alertContainer");
 let board = document.getElementById('board');
 
+/**
+ * A class representing a Player
+ * Requires providing a name and color (in hex) for the player
+ * Optionally allows specifying if the player is AI or not
+ */
 class Player {
-  constructor(name, color) {
+  constructor(name, color, aiFlag=false) {
     this.name = name;
     this.color = color;
+    this.ai = aiFlag;
     this.id = generateMD5HashHex(name);
   }
 }
 
+/** Keeps track of a unique instance of the game */
 class Game {
-  constructor(playerOne, playerTwo, width = 7, height = 6) {
+  constructor(width = 7, height = 6) {
     this.width = width;
     this.height = height;
     this.state = this._createGameState();
-    this.htmlBoard = this._createHtmlBoard();
-    this.players = [playerOne, playerTwo];
-    this.currPlayerIndex = 0;
-    this.currPlayer = this.players[this.currPlayerIndex];
+    this.players = [];
     this.placedPieces = [];
+    this.gameStarted = false;
     this.gameEnded = false;
+  }
+
+  /** Adds a player to an initialized game */
+  addPlayer(player) {
+    this.players.push(player);
+  }
+
+  /** Removes a player from an initialized game by passing their ID */
+  removePlayer(playerId) {
+    for (let i = 0; i < this.players.length; i++) {
+      if (this.players[i].id === playerId) {
+        this.players.splice(i, 1);
+      }
+    }
+  }
+
+  /** Starts a game onces at least two players have been added */
+  startGame() {
+    // select starting player
+    let totalPlayers = this.players.length;
+    this.currPlayerIndex = Math.floor(Math.random() * totalPlayers);
+    this.currPlayer = this.players[this.currPlayerIndex];
+
+    this.htmlBoard = this._createHtmlBoard();
+
+    this.gameStarted = true;
   }
 
   /**
@@ -325,22 +359,7 @@ class Game {
 function startGame(evt) {
   board.innerHTML = "";
   alertContainer.style.display = 'none';
-
-  let playerOneName = document.getElementById("playerOneName").value;
-  let playerOneColor = document.getElementById("playerOneColor").value;
-  let playerTwoName = document.getElementById("playerTwoName").value;
-  let playerTwoColor = document.getElementById("playerTwoColor").value;
-
-  if (playerOneName === playerTwoName) {
-    alertContainer.innerText = "Player names must be unique!";
-    alertContainer.style.display = '';
-    return;
-  }
-
-  let playerOne = new Player(playerOneName, playerOneColor);
-  let playerTwo = new Player(playerTwoName, playerTwoColor);
-
-  game = new Game(playerOne, playerTwo);
+  game.startGame();
   startButton.innerText = "Restart Game";
 }
 
@@ -362,3 +381,65 @@ function handlePieceDrop(evt) {
 
   game.dropPiece(targetColumn);
 }
+
+/** Handle click to add a human player */
+function handleAddPlayer(evt) {
+  let playerName = document.getElementById("playerName").value;
+
+  if (playerName.trim() === '') {
+    alertContainer.innerText = "Player names must not be empty!";
+    alertContainer.style.display = '';
+    return;
+  }
+
+  let playerColor = document.getElementById("playerColor").value;
+  let playerAiToggle = document.getElementById("aiPlayerCheck").checked;
+
+  for (let player of game.players) {
+    if (player.name === playerName) {
+      alertContainer.innerText = "Player names must be unique!";
+      alertContainer.style.display = '';
+      return;
+    }
+  }
+
+  let player = new Player(playerName, playerColor, playerAiToggle);
+  game.addPlayer(player);
+  addPlayerToHtmlList(player);
+}
+
+/** Handle click to remove a player */
+function handleRemovePlayer(evt) {
+  game.removePlayer(evt.target.id);
+  removePlayerFromHtmlList(evt.target.id);
+}
+
+/** Generates the HTML to add a player to the current player list */
+function addPlayerToHtmlList(player) {
+  let playerDiv = document.createElement("div");
+  playerDiv.classList.add("fw-light");
+  playerDiv.id = `playerDiv${player.id}`;
+
+  let playerName = document.createElement("span");
+  let playerType = player.ai ? 'AI' : 'Human';
+  playerName.innerText = `${player.name} (${playerType})`;
+
+  let removeButton = document.createElement("button");
+  removeButton.classList.add("btn", "btn-sm", "btn-outline-danger", "mb-2", "mt-2");
+  removeButton.innerText = 'Remove';
+  removeButton.setAttribute('type', 'button');
+  removeButton.id = player.id;
+  removeButton.addEventListener('click', handleRemovePlayer);
+
+  playerDiv.appendChild(playerName);
+  playerDiv.appendChild(removeButton);
+
+  playerList.appendChild(playerDiv);
+}
+
+function removePlayerFromHtmlList(playerId) {
+  let playerDiv = document.getElementById(`playerDiv${playerId}`);
+  playerDiv.remove();
+}
+
+let game = new Game();
