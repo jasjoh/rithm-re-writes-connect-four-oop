@@ -56,7 +56,6 @@ class Game {
   constructor(width = 7, height = 6) {
     this.width = width;
     this.height = height;
-    this.state = this._createGameState();
     this.players = [];
     this.placedPieces = [];
     this.gameStarted = false;
@@ -84,6 +83,7 @@ class Game {
     this.currPlayerIndex = Math.floor(Math.random() * totalPlayers);
     this.currPlayer = this.players[this.currPlayerIndex];
 
+    this.state = this._createGameState();
     this.htmlBoard = this._createHtmlBoard();
 
     this.gameStarted = true;
