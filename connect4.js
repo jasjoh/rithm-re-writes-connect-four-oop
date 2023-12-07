@@ -37,6 +37,8 @@ let playerList = document.getElementById("playerListCol");
 let alertContainer = document.getElementById("alertContainer");
 let board = document.getElementById('board');
 
+let currPlayerName = document.getElementById("currPlayerName");
+
 /**
  * A class representing a Player
  * Requires providing a name and color (in hex) for the player
@@ -82,6 +84,10 @@ class Game {
     let totalPlayers = this.players.length;
     this.currPlayerIndex = Math.floor(Math.random() * totalPlayers);
     this.currPlayer = this.players[this.currPlayerIndex];
+    this._updateCurrPlayerDisplay();
+
+    console.log("game players:", this.players);
+    console.log("current player:", this.currPlayer);
 
     this.state = this._createGameState();
     this.htmlBoard = this._createHtmlBoard();
@@ -345,12 +351,18 @@ class Game {
     if (this.currPlayerIndex >= this.players.length - 1) {
       this.currPlayerIndex = 0;
       this.currPlayer = this.players[0]
+      this._updateCurrPlayerDisplay();
       console.log("current player now:", this.currPlayer);
       return;
     }
     this.currPlayerIndex++;
     this.currPlayer = this.players[this.currPlayerIndex];
+    this._updateCurrPlayerDisplay();
     console.log("current player now:", this.currPlayer);
+  }
+
+  _updateCurrPlayerDisplay() {
+    currPlayerName.innerText = this.currPlayer.name;
   }
 
 }
@@ -359,6 +371,10 @@ class Game {
 function startGame(evt) {
   board.innerHTML = "";
   alertContainer.style.display = 'none';
+
+  let currPlayerSpan = document.getElementById("currPlayer");
+  currPlayerSpan.style.display = '';
+
   game.startGame();
   startButton.innerText = "Restart Game";
 }
