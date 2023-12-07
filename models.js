@@ -116,6 +116,10 @@ class Game {
 
   /** Starts a game onces at least two players have been added */
   async startGame() {
+    if (this.players.length < 2) {
+      throw new Error("Not enough players!");
+    }
+
     this.state = this._createGameState();
     this.htmlBoard = this._createHtmlBoard();
 

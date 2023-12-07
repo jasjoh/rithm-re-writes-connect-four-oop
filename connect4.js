@@ -48,7 +48,14 @@ async function startGame(evt) {
   let currPlayerSpan = document.getElementById("currPlayer");
   currPlayerSpan.style.display = '';
 
-  await game.startGame();
+  try {
+    await game.startGame();
+  } catch (err) {
+    alertContainer.innerText = err;
+    alertContainer.style.display = '';
+    return;
+  }
+
   startButton.innerText = "Restart Game";
 }
 
