@@ -16,7 +16,7 @@
  * - if not null, call dropPiece() for that col
  */
 
-const delayInMs = 1000;
+const delayInMs = 500;
 
 function delay(ms) {
   /**
@@ -361,7 +361,8 @@ class Game {
       for (let j = 0; j < this.state[px][py].validCoordSets.length; j++) {
         const validCoordSets = this.state[px][py].validCoordSets[j];
         if(validCoordSets.every(c => this.state[c[0]][c[1]].value === this.currPlayer.id)) {
-          return this._endGame(`Player ${this.currPlayer.name} has won!`);
+          setTimeout(this._endGame(`Player ${this.currPlayer.name} has won!`), 10);
+          return;
         }
       }
     }
