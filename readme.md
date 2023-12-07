@@ -1,10 +1,12 @@
-Goal: Building a connect four game in vanilla javascript
+Goal: Refactor the vanilla connect four project to leverage OOP + add addtional functionality
 
 Requirements:
-- Grid is 7 wide, 6 deep
-- Two players (red and blue)
-- Basic connect four rules
+- Refactor using OOP
+- Unlimited players with custom names and colors
+- AI players 
 
 Learnings:
-- Basics of DOM element selection, creation and modification
-- Algorithms for traversing matrix to identify sequences
+- Refreshing brain on JS OOP including extension and context (this)
+- Refreshing brain on usage of Bootcamp for layout / styling
+- Leveraging a simple MD5 hash function to generate non-secure unique IDs for players
+- Leveraging .toString(16) to generate hexadecimal version of numbers
