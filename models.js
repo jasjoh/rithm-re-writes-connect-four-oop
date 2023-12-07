@@ -374,7 +374,8 @@ class Game {
     console.log("checking for game end");
     // check for tie
     if(this.state[0].every(cell => cell.value !== null)) {
-      return endGame("It's a tie!");
+      setTimeout(this._endGame("It's a tie!"), 10);
+      return;
     }
 
     // check if it's a win
