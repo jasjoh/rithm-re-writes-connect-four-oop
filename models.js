@@ -53,11 +53,17 @@ class Player {
 class AiPlayer extends Player {
   constructor(name, color) {
     super(name, color);
-    this.availCols = this._aiInitAvailCols();
+    this.availCols = [];
   }
 
-  takeTurn() {
-    this._aiDropPiece();
+  async takeTurn() {
+    console.log("I am taking my turn. I am:", this.name);
+    await this._aiDropPiece();
+  }
+
+  /** Let's AI know it's a new game */
+  newGame() {
+    this.availCols = this._aiInitAvailCols();
   }
 
   _aiInitAvailCols() {
@@ -71,9 +77,10 @@ class AiPlayer extends Player {
   }
 
   async _aiDropPiece() {
+    console.log("_aiDropPiece() called for player:", this.name);
     await delay(delayInMs);
     let colToAttempt = Math.floor(Math.random() * this.availCols.length);
-    if (game.dropPiece(colToAttempt)) { return; }
+    if (await game.dropPiece(colToAttempt)) { return; }
     this.availCols.splice(colToAttempt, 1);
     await this._aiDropPiece();
     return;
@@ -106,16 +113,24 @@ class Game {
   }
 
   /** Starts a game onces at least two players have been added */
-  startGame() {
+  async startGame() {
+    this.state = this._createGameState();
+    this.htmlBoard = this._createHtmlBoard();
+
+    // let AI players know it's a new game
+    for (let player of this.players) {
+      if (player instanceof AiPlayer) {
+        player.newGame();
+      }
+    }
+
     // select starting player
-    this._updateCurrPlayer(true);
+    await this._updateCurrPlayer(true);
 
     console.log("game players:", this.players);
     console.log("current player:", this.currPlayer);
 
-    this.state = this._createGameState();
-    this.htmlBoard = this._createHtmlBoard();
-
+    this.gameEnded = false;
     this.gameStarted = true;
   }
 
@@ -124,7 +139,7 @@ class Game {
    * If room exists, adds that piece to the lowest open slots and returns true
    * If room does NOT exist (column is full), returns false
    */
-  dropPiece(col) {
+  async dropPiece(col) {
     if (this.gameEnded) { return; }
     // find the next available space (row) for the piece in the target column
     var targetRow = this._findEmptyCellInColumn(col);
@@ -136,7 +151,7 @@ class Game {
     this._placePieceInHtml(targetRow, col);
 
     // check for win condition
-    this._checkForGameEnd();
+    await this._checkForGameEnd();
     return true;
   }
 
@@ -149,6 +164,7 @@ class Game {
     console.log("createGameState() called");
 
     const gameState = [];
+    this.placedPieces = [];
 
     _initializeMatrix.call(this);
     _populateBoardSpaces.call(this);
@@ -344,7 +360,7 @@ class Game {
  }
 
   /** Checks for whether the game has ended and notifies the user if so */
-  _checkForGameEnd() {
+  async _checkForGameEnd() {
     console.log("checking for game end");
     // check for tie
     if(this.state[0].every(cell => cell.value !== null)) {
@@ -368,11 +384,11 @@ class Game {
     }
 
     // switch players
-    this._updateCurrPlayer();
+    await this._updateCurrPlayer();
   }
 
   /** Switches to the next player */
-  _updateCurrPlayer(random) {
+  async _updateCurrPlayer(random) {
     console.log("switching players")
 
     if (random) {
@@ -392,7 +408,7 @@ class Game {
     _updateCurrPlayerDisplay(this);
     if (this.currPlayer instanceof AiPlayer) {
       console.log("ai player taking their turn");
-      this.currPlayer.takeTurn();
+      await this.currPlayer.takeTurn();
     }
 
     function _updateCurrPlayerDisplay(context) {

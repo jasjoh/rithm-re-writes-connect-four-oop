@@ -41,14 +41,14 @@ let currPlayerName = document.getElementById("currPlayerName");
 
 
 /** Starts a new game (and restarts any existing games) */
-function startGame(evt) {
+async function startGame(evt) {
   board.innerHTML = "";
   alertContainer.style.display = 'none';
 
   let currPlayerSpan = document.getElementById("currPlayer");
   currPlayerSpan.style.display = '';
 
-  game.startGame();
+  await game.startGame();
   startButton.innerText = "Restart Game";
 }
 
