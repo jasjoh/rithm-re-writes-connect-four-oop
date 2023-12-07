@@ -16,7 +16,7 @@
  * - if not null, call dropPiece() for that col
  */
 
-const delayInMs = 500;
+const delayInMs = 200;
 
 function delay(ms) {
   /**
@@ -80,8 +80,10 @@ class AiPlayer extends Player {
     console.log("_aiDropPiece() called for player:", this.name);
     await delay(delayInMs);
     let colToAttempt = Math.floor(Math.random() * this.availCols.length);
-    if (await game.dropPiece(colToAttempt)) { return; }
+    if (await game.dropPiece(this.availCols[colToAttempt])) { return; }
+    console.log("col was full so we're removing it from avail:", colToAttempt);
     this.availCols.splice(colToAttempt, 1);
+    console.log("updated availCols after splice:", this.availCols);
     await this._aiDropPiece();
     return;
   }
@@ -140,11 +142,15 @@ class Game {
    * If room does NOT exist (column is full), returns false
    */
   async dropPiece(col) {
+    console.log("dropPiece() called for col:", col);
     if (this.gameEnded) { return; }
     // find the next available space (row) for the piece in the target column
     var targetRow = this._findEmptyCellInColumn(col);
     console.log("target row found:", targetRow);
-    if (targetRow === null) { return false; } // no space so ignore the click
+    if (targetRow === null) {
+      console.log("col was full, returning false to dropPiece()")
+      return false;
+    } // no space so ignore the click
 
     // add to the JS board and the HTML board
     this._addToBoard(targetRow, col);
@@ -313,16 +319,20 @@ class Game {
   _findEmptyCellInColumn(col) {
     console.log("attempting to find empty cell at col:", col);
     // check if the column is full and return 'null' if true
-    if (this.state[0][col].value !== null) { return null; }
+    if (this.state[0][col].value !== null) {
+      console.log("this col was full");
+      return null;
+    }
 
-    let row = 0; // start a first row
+    let row = 0; // start at first row
 
     // loop through rows top to bottom until we either:
     // -- find a non-null cell (and return the slot above)
     // -- reach the last cell and return it
     while (row < this.height) {
       if (this.state[row][col].value !== null) {
-        console.log("column was full");
+        console.log("found a piece at row, col", row, " ", col);
+        console.log("returning the row above:", row - 1);
         return row - 1;
       }
       row++;
@@ -372,7 +382,7 @@ class Game {
     for (let i = 0; i < this.placedPieces.length; i++) {
       const px = this.placedPieces[i][0];
       const py = this.placedPieces[i][1];
-      console.log("checking placed piece at xy", px, py);
+      // console.log("checking placed piece at xy", px, py);
       // check each valid coord set for this piece
       for (let j = 0; j < this.state[px][py].validCoordSets.length; j++) {
         const validCoordSets = this.state[px][py].validCoordSets[j];
